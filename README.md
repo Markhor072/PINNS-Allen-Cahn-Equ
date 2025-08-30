@@ -1,103 +1,97 @@
-# Human Activity Recognition using Smartphone Accelerometer Data
+# Physics-Informed Neural Networks (PINNs) for the Allen-Cahn Equation
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white)
-![Scikit-learn](https://img.shields.io/badge/Scikit_Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)
 ![Jupyter](https://img.shields.io/badge/Jupyter-F37626.svg?style=for-the-badge&logo=Jupyter&logoColor=white)
 
-A machine learning project that classifies human physical activities (Walking, Sitting, Standing, etc.) from smartphone sensor data using tri-axial accelerometer and gyroscope measurements.
+An implementation of **Physics-Informed Neural Networks (PINNs)** to solve the non-linear **Allen-Cahn equation**, a foundational model for phase separation and reaction-diffusion systems in material science.
 
 ---
 
-## 📖 Project Overview
+## 📖 Theoretical Background
 
-Human Activity Recognition (HAR) is a key problem in the field of wearable computing and context-aware systems. This project implements a complete machine learning pipeline to process raw sensor data, extract meaningful features, and train classification models to accurately identify user activities. The system demonstrates the potential for applications in healthcare, fitness tracking, and smart environments.
+The **Allen-Cahn equation** is a seminal partial differential equation (PDE) in mathematical physics:
 
-## 📊 Dataset
+$$
+\frac{\partial u}{\partial t} - D \frac{\partial^2 u}{\partial x^2} + \gamma (u^3 - u) = 0, \quad x \in [-1, 1], t \in [0, T]
+$$
 
-The project uses the **UCI HAR Smartphone Dataset**, a well-known benchmark dataset for activity recognition.
+where:
+- $u(x, t)$ is the phase field variable,
+- $D$ is the diffusion coefficient,
+- $\gamma$ is a relaxation parameter.
 
-- **Source**: [UCI Machine Learning Repository: HAR Smartphone Dataset](https://archive.ics.uci.edu/ml/datasets/human+activity+recognition+using+smartphones)
-- **Sensors**: Accelerometer & Gyroscope (sampled at 50Hz)
-- **Activities**: `WALKING`, `WALKING_UPSTAIRS`, `WALKING_DOWNSTAIRS`, `SITTING`, `STANDING`, `LAYING`
-- **Subjects**: 30 volunteers
-- **Data**: Pre-processed into 561-feature vectors with time and frequency domain variables.
+This project demonstrates how deep learning can be used to solve such complex, non-linear PDEs without traditional numerical discretization methods.
+
+## 🚀 Key Features
+
+- **PINNs Framework**: Implements the core PINN methodology to embed the physics of the Allen-Cahn equation directly into the loss function of a neural network.
+- **Custom Loss Function**: The loss combines:
+  - **PDE Loss**: Residual of the Allen-Cahn equation.
+  - **Boundary Condition (BC) Loss**: Enforces periodic or Dirichlet/Neumann BCs.
+  - **Initial Condition (IC) Loss**: Fits the initial state of the system.
+- **Spectral Validation**: Validates the neural network solution against a reference solution obtained using a high-accuracy spectral method (when available).
 
 ## 🛠️ Tech Stack & Libraries
 
-- **Programming Language**: Python 3.x
-- **Data Handling**: Pandas, NumPy
-- **Machine Learning**: Scikit-learn
-- **Data Visualization**: Matplotlib, Seaborn
-- **Environment**: Jupyter Notebook
-
-## 🚀 Methodology
-
-The project follows a standard ML workflow:
-
-1.  **Data Acquisition & Exploration**: Load and understand the structure of the train/test datasets.
-2.  **Data Preprocessing**: Handle missing values, normalize features, and prepare data for modeling.
-3.  **Feature Engineering**: Utilize the provided 561 features derived from raw sensor signals, including:
-    - **Time-domain**: Mean, standard deviation, entropy, etc.
-    - **Frequency-domain**: Fast Fourier Transform (FFT) coefficients.
-4.  **Model Training**: Train and evaluate multiple classifiers:
-    - Random Forest
-    - Gradient Boosting
-    - Support Vector Machine (SVM)
-    - Logistic Regression
-5.  **Model Evaluation**: Compare models based on accuracy, precision, recall, and F1-score. Analyze the confusion matrix to understand per-class performance.
-6.  **Results & Visualization**: Generate plots to visualize model performance and feature importance.
-
-## 📈 Results
-
-The trained models achieved high accuracy in classifying the six activities. The **Random Forest** classifier consistently performed among the best, leveraging its ability to handle high-dimensional data well.
-
-| Model                | Accuracy | Precision | Recall | F1-Score |
-| -------------------- | :------: | :-------: | :----: | :------: |
-| Random Forest        |   **~96%**   |    ~96%   |  ~96%  |   ~96%   |
-| Gradient Boosting    |   ~94%   |    ~94%   |  ~94%  |   ~94%   |
-| Support Vector Machine |   ~92%   |    ~92%   |  ~92%  |   ~92%   |
-
-*Results are approximate and may vary based on test-train split and hyperparameters.*
+- **Core Framework**: TensorFlow 2.x / Keras
+- **Scientific Computing**: NumPy, SciPy
+- **Visualization**: Matplotlib, Seaborn
+- **Interactive Development**: Jupyter Notebook
 
 ## 📁 Repository Structure
-├── data/ # Directory for dataset (not included in repo)
+PINNS-Allen-Cahn-Equ/
+├── Allen_Cahn_PINNs.ipynb # Main Jupyter notebook with full implementation & analysis
 
-├── notebooks/
-│ └── HAR_Analysis.ipynb # Main Jupyter Notebook for the entire analysis
+├── models/ # (Optional) Directory for saved trained models
 
-├── models/ # (Optional) Saved trained models
+├── utils/ # (Optional) Helper functions (e.g., for plotting, data generation)
 
-├── images/ # Plots and visualizations
+├── figs/ # Generated plots and visualizations
 
 ├── README.md
 
 └── requirements.txt # Python dependencies
 
 
+## 💡 Methodology
+
+1.  **Problem Setup**: Define the computational domain, parameters (D, γ), and initial/boundary conditions for the Allen-Cahn equation.
+2.  **Network Architecture**: Construct a fully connected neural network (NN) $u_{\theta}(x, t)$ to approximate the solution, where $\theta$ represents the network parameters.
+3.  **Physics-Informed Loss**: Calculate derivatives of the NN output ($u_t$, $u_{xx}$) using automatic differentiation (TensorFlow's `GradientTape`) and compute the PDE residual.
+4.  **Training**: Minimize a composite loss function $L = L_{PDE} + L_{BC} + L_{IC}$ to train the network to satisfy both the data and the underlying physics.
+5.  **Analysis & Visualization**: Evaluate the solution and plot the results to show the evolution of the phase field and the convergence of the loss.
+
+## 📈 Results
+
+The PINN successfully learns the dynamics of the Allen-Cahn equation, capturing the key phenomenon of **phase separation** and the motion of interfaces.
+
+- **Solution Accuracy**: The NN solution $u_{\theta}(x, t)$ achieves low PDE residual and fits the initial and boundary conditions.
+- **Visualization**: The repository includes plots of the solution over time and space, showing the evolution from the initial condition to the steady state.
+- **Loss Convergence**: Plots of the training loss demonstrate the optimization process and the balancing of the different loss components.
+
 ## 🔧 Installation & Execution
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/Markhor072/Human-Activity-Recognition-using-Smartphone-Accelerometer-Data.git
-    cd Human-Activity-Recognition-using-Smartphone-Accelerometer-Data
+    git clone https://github.com/Markhor072/PINNS-Allen-Cahn-Equ.git
+    cd PINNS-Allen-Cahn-Equ
     ```
 
 2.  **Install dependencies**
     ```bash
     pip install -r requirements.txt
+    # Or core dependencies:
+    # pip install tensorflow numpy matplotlib jupyter
     ```
 
-3.  **Download the Dataset**
-    - Download the UCI HAR Dataset from [this link](https://archive.ics.uci.edu/ml/machine-learning-databases/00240/UCI%20HAR%20Dataset.zip).
-    - Unzip it and place the `UCI HAR Dataset` folder in the project's `data/` directory.
-
-4.  **Run the Jupyter Notebook**
+3.  **Run the Jupyter Notebook**
     ```bash
-    jupyter notebook
+    jupyter notebook Allen_Cahn_PINNs.ipynb
     ```
-    Open and run the `notebooks/HAR_Analysis.ipynb` notebook step-by-step.
+    Execute the notebook cells to train the PINN and generate the plots.
 
 ## 👨‍💻 Author
 
@@ -105,13 +99,14 @@ The trained models achieved high accuracy in classifying the six activities. The
 
 - GitHub: [@Markhor072](https://github.com/Markhor072)
 - LinkedIn: [Shahid Hassan](https://www.linkedin.com/in/markhor072)
-- Portfolio: [https://shahidhassan.vercel.app](https://shahidhassan.vercel.app)
+- Portfolio: [shahidhassan.vercel.app](https://shahidhassan.vercel.app)
+
+## 📚 References
+
+1.  Raissi, M., Perdikaris, P., & Karniadakis, G. E. (2019). Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational Physics, 378, 686–707.
+2.  Allen, S. M., & Cahn, J. W. (1979). A microscopic theory for antiphase boundary motion and its application to antiphase domain coarsening. Acta Metallurgica, 27(6), 1085–1095.
+3.  Original PINNs Paper Codebase: [https://github.com/maziarraissi/PINNs](https://github.com/maziarraissi/PINNs)
 
 ## 📜 License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-## 🙏 Acknowledgments
-
-- The researchers who created and made the [UCI HAR Dataset](https://archive.ics.uci.edu/ml/datasets/human+activity+recognition+using+smartphones) publicly available.
-- The open-source community for maintaining the invaluable Python data science libraries.
