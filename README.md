@@ -43,6 +43,7 @@ This project demonstrates how deep learning can be used to solve such complex, n
 
 ## 📁 Repository Structure
 PINNS-Allen-Cahn-Equ/
+
 ├── Allen_Cahn_PINNs.ipynb # Main Jupyter notebook with full implementation & analysis
 
 ├── models/ # (Optional) Directory for saved trained models
